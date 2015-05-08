@@ -32,7 +32,7 @@ static int core_limit = 8;
 #define THUNDERPLUG "thunderplug"
 
 #define DRIVER_VERSION  2
-#define DRIVER_SUBVER 1
+#define DRIVER_SUBVER 5
 
 #define CPU_LOAD_THRESHOLD        (65)
 
