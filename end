@@ -1,0 +1,88 @@
+[33mcommit 7d4c147a7c0ac4068863146ec3a2275c00127d3b[m
+Author: Haikal Izzuddin <heywhite69@gmail.com>
+Date:   Sat Nov 28 09:22:03 2015 +0100
+
+    Added sensei-changelog generator
+    
+    Signed-off-by: Haikal Izzuddin <webhaikal@gmail.com>
+
+[33mcommit eff34bd5db54979b128f5dd2053a75a640401884[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:47:57 2015 +0800
+
+    ferrari_debug_defconfig: Enable O3 power
+
+[33mcommit 138a6d051a70e585758ff169fd536f2dff75e6ee[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:47:16 2015 +0800
+
+    Some more optimizations
+     * That's the third time today...
+
+[33mcommit 62a73b8f52e6b824b9655201d80c34c395a431e6[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:45:09 2015 +0800
+
+    mmc: Toggleable software crc
+
+[33mcommit 18f28be0f2dc415a0ae79e3f4380c3cfc9ff7c2a[m
+Author: andip71 <andreasp@gmx.de>
+Date:   Fri Sep 25 15:37:41 2015 +0200
+
+    cpu: Keep CPU cores 0 and 4 always on
+    
+    Signed-off-by: Haikal Izzuddin <webhaikal@gmail.com>
+
+[33mcommit adabcb3060ae7d0874dc8607b16b7e5f310b9075[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:42:16 2015 +0800
+
+    ferrari: Enable all cpus at boot time
+
+[33mcommit 294fe57ca18077534556f6ed22c9eb4deadd7fea[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:38:39 2015 +0800
+
+    state_notifier: Added new driver for on/off operations
+     * Doze mode and FB notiers aren't friendly.
+       Introduce state notifier to make things smooth.
+
+[33mcommit 23980c8abab88da974b68cf6df960c2fb93087ee[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:33:51 2015 +0800
+
+    SenseiFerrari: build: Updated version to 2.0.3-dev
+
+[33mcommit d1223359882d2e4cf4c531588e4fad0ce4cf1e17[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:31:34 2015 +0800
+
+    wcd9330: ferrari: sound: Added base for sound control driver
+
+[33mcommit d5bd2ae1475d0019465291ad0c368432c527efe1[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:08:16 2015 +0800
+
+    Added some more optimizations
+     -O2 flag used
+
+[33mcommit dfe54256aad7ba804cde7aa13fcfa7d0d038ea5c[m
+Author: Haikal Izzuddin <webhaikal@gmail.com>
+Date:   Fri Dec 11 16:05:41 2015 +0800
+
+    Added optimizations and graphite support
+
+[33mcommit b6a06521472c38460d6ac0a626bce6b6b1c08dba[m
+Author: despairfactor <matthewdalex92@gmail.com>
+Date:   Mon Nov 9 23:58:02 2015 -0500
+
+    selinux: permissive by default
+    
+    Signed-off-by: Haikal Izzuddin <heywhite69@gmail.com>
+    Signed-off-by: Haikal Izzuddin <webhaikal@gmail.com>
+
+[33mcommit 0f0994e769d70378b97ecf647c4efcb86586d01b[m
+Author: Haikal Izzuddin <heywhite69@gmail.com>
+Date:   Fri Dec 11 15:33:50 2015 +0800
+
+    SenseiFerrari : Initial Commit

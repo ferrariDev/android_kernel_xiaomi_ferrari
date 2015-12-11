@@ -28,7 +28,7 @@ do
 cd $line
     # Test to see if the repo needs to have a changelog written.
     log=$(git log --pretty="%an - %s" --no-merges --since=$sdate --date-order)
-    project="AK KERNEL"
+    project="SenseiFerrari"
     if [ -z "$log" ]; then
     echo " >>> Nothing updated on $project changelog, skipping ..."
     else
