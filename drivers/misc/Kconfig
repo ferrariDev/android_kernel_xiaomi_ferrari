@@ -633,6 +633,12 @@ config UID_CPUTIME
 	help
 	  Per UID based cpu time statistics exported to /proc/uid_cputime
 
+config SOUND_CONTROL
+	bool "WCD9330 Sound Control"
+	default n
+	help
+	  Sound Control for Mic Headphones and Speaker
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"

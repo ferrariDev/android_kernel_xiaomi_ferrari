@@ -47,6 +47,22 @@ enum {
 	BUS_DOWN,
 };
 
+#ifdef CONFIG_SOUND_CONTROL
+struct sound_control {
+	int default_headphones_value;
+	int default_speaker_value;
+	int default_mic_value;
+	struct snd_soc_codec *snd_control_codec;
+	bool playback_lock;
+	bool speaker_lock;
+	bool recording_lock;
+} soundcontrol = {
+	.playback_lock = false,
+	.speaker_lock = false,
+	.recording_lock = false,
+};
+#endif
+
 #define TOMTOM_MAD_SLIMBUS_TX_PORT 12
 #define TOMTOM_MAD_AUDIO_FIRMWARE_PATH "wcd9320/wcd9320_mad_audio.bin"
 #define TOMTOM_VALIDATE_RX_SBPORT_RANGE(port) ((port >= 16) && (port <= 23))
@@ -5211,9 +5227,40 @@ static int tomtom_volatile(struct snd_soc_codec *ssc, unsigned int reg)
 	return 0;
 }
 
+#ifdef CONFIG_SOUND_CONTROL
+static int reg_access(unsigned int reg)
+{
+	int ret = 1;
+
+	switch (reg) {
+		case TOMTOM_A_CDC_RX1_VOL_CTL_B2_CTL:
+		case TOMTOM_A_CDC_RX2_VOL_CTL_B2_CTL:
+			if (soundcontrol.playback_lock)
+                                ret = 0;
+                        break;
+		case TOMTOM_A_CDC_RX7_VOL_CTL_B2_CTL:
+			if (soundcontrol.speaker_lock)
+                                ret = 0;
+			break;
+		case TOMTOM_A_CDC_TX3_VOL_CTL_GAIN:
+			if (soundcontrol.recording_lock)
+				ret = 0;
+			break;
+		default:
+			break;
+		}
+
+	return ret;
+}
+#endif
+
 static int tomtom_write(struct snd_soc_codec *codec, unsigned int reg,
 	unsigned int value)
 {
+
+#ifdef CONFIG_SOUND_CONTROL
+	int val;
+#endif
 	int ret;
 	struct wcd9xxx *wcd9xxx = codec->control_data;
 	struct tomtom_priv *tomtom_p = snd_soc_codec_get_drvdata(codec);
@@ -5234,8 +5281,20 @@ static int tomtom_write(struct snd_soc_codec *codec, unsigned int reg,
 		dev_err(codec->dev, "write 0x%02x while offline\n", reg);
 		return -ENODEV;
 	} else
+#ifdef CONFIG_SOUND_CONTROL
+		{
+		if (!reg_access(reg))
+			val = wcd9xxx_reg_read(&wcd9xxx->core_res, reg);
+		else
+			val = value;
+
+		return wcd9xxx_reg_write(&wcd9xxx->core_res, reg, val);
+	}
+#else
 		return wcd9xxx_reg_write(&wcd9xxx->core_res, reg, value);
+#endif
 }
+
 static unsigned int tomtom_read(struct snd_soc_codec *codec,
 				unsigned int reg)
 {
@@ -8379,6 +8438,65 @@ static const struct snd_soc_dapm_widget tomtom_1_dapm_widgets[] = {
 			   SND_SOC_DAPM_POST_PMD),
 };
 
+#ifdef CONFIG_SOUND_CONTROL
+void update_headphones_volume_boost(unsigned int vol_boost)
+{
+	int default_val = soundcontrol.default_headphones_value;
+	int boosted_val = default_val + vol_boost;
+
+	pr_info("Sound Control: Headphones default value %d\n", default_val);
+
+	soundcontrol.playback_lock = false;
+	tomtom_write(soundcontrol.snd_control_codec,
+		TOMTOM_A_CDC_RX1_VOL_CTL_B2_CTL, boosted_val);
+	tomtom_write(soundcontrol.snd_control_codec,
+		TOMTOM_A_CDC_RX2_VOL_CTL_B2_CTL, boosted_val);
+	soundcontrol.playback_lock = true;
+
+	pr_info("Sound Control: Boosted Headphones RX1 value %d\n",
+		tomtom_read(soundcontrol.snd_control_codec,
+		TOMTOM_A_CDC_RX1_VOL_CTL_B2_CTL));
+
+	pr_info("Sound Control: Boosted Headphones RX2 value %d\n",
+		tomtom_read(soundcontrol.snd_control_codec,
+		TOMTOM_A_CDC_RX2_VOL_CTL_B2_CTL));
+}
+
+void update_speaker_gain(int vol_boost)
+{
+	int default_val = soundcontrol.default_speaker_value;
+	int boosted_val = default_val + vol_boost;
+
+	pr_info("Sound Control: Speaker default value %d\n", default_val);
+
+	soundcontrol.speaker_lock = false;
+	tomtom_write(soundcontrol.snd_control_codec,
+		TOMTOM_A_CDC_RX7_VOL_CTL_B2_CTL, boosted_val);
+	soundcontrol.speaker_lock = true;
+
+	pr_info("Sound Control: Boosted Speaker RX7 value %d\n",
+		tomtom_read(soundcontrol.snd_control_codec,
+		TOMTOM_A_CDC_RX7_VOL_CTL_B2_CTL));
+}
+
+void update_mic_gain(unsigned int vol_boost)
+{
+	int default_val = soundcontrol.default_mic_value;
+	int boosted_val = default_val + vol_boost;
+
+	pr_info("Sound Control: Mic default value %d\n", default_val);
+
+	soundcontrol.recording_lock = false;
+	tomtom_write(soundcontrol.snd_control_codec,
+		TOMTOM_A_CDC_TX3_VOL_CTL_GAIN, boosted_val);
+	soundcontrol.recording_lock = true;
+
+	pr_info("Sound Control: Boosted Mic value %d\n",
+		tomtom_read(soundcontrol.snd_control_codec,
+		TOMTOM_A_CDC_TX3_VOL_CTL_GAIN));
+}
+#endif
+
 static struct regulator *tomtom_codec_find_regulator(struct snd_soc_codec *cdc,
 						    const char *name)
 {
@@ -8480,6 +8598,10 @@ static int tomtom_codec_probe(struct snd_soc_codec *codec)
 	int i, rco_clk_rate;
 	void *ptr = NULL;
 	struct wcd9xxx_core_resource *core_res;
+
+#ifdef CONFIG_SOUND_CONTROL
+	soundcontrol.snd_control_codec = codec;
+#endif
 
 	codec->control_data = dev_get_drvdata(codec->dev->parent);
 	control = codec->control_data;
@@ -8646,6 +8768,17 @@ static int tomtom_codec_probe(struct snd_soc_codec *codec)
 	snd_soc_dapm_sync(dapm);
 
 	codec->ignore_pmdown_time = 1;
+#ifdef CONFIG_SOUND_CONTROL
+	/*
+	 * Get the default values during probe
+	 */
+	soundcontrol.default_headphones_value = tomtom_read(codec,
+		TOMTOM_A_CDC_RX1_VOL_CTL_B2_CTL);
+	soundcontrol.default_speaker_value = tomtom_read(codec,
+		TOMTOM_A_CDC_RX7_VOL_CTL_B2_CTL);
+	soundcontrol.default_mic_value = tomtom_read(codec,
+		TOMTOM_A_CDC_TX3_VOL_CTL_GAIN);
+#endif
 	ret = tomtom_cpe_initialize(codec);
 	if (ret) {
 		dev_info(codec->dev,
