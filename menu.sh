@@ -55,17 +55,24 @@ one(){
 	do
 	case "$echoice" in
 	1 )
-		export CROSS_COMPILE="/home/haikalizz/Development/Toolchains/ubertc4.9/bin/aarch64-"
+		export CROSS_COMPILE="/home/haikalizz/Development/Toolchains/ubertc4.9/bin/aarch64-linux-android-"
 		TC="UBER4.9"
 		echo
-		echo "Using UBERTC"
+		echo "Using UBERTC4.9"
 		break
 		;;
 	2 )
 		export CROSS_COMPILE="/home/haikalizz/Development/Toolchains/sabermod4.9/bin/aarch64-"
 		TC="SaberMod4.9"
 		echo
-		echo "Using SM"
+		echo "Using SM4.9"
+		break
+		;;
+	3 )
+		export CROSS_COMPILE="/home/haikalizz/Development/Toolchains/ubertc6.0/bin/aarch64-linux-android-"
+		TC="UBER6.0"
+		echo
+		echo "Using UBER6"
 		break
 		;;
 	* )
