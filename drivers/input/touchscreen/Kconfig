@@ -1064,4 +1064,11 @@ config SWEEP2SLEEP
         help
           Say Y here to support sweep2sleep
 
+config TOUCHBOOST_CONTROL
+	bool "Touch boost control"
+	depends on INPUT_TOUCHSCREEN
+	help
+	  Boeffla Kernels functionality to control input boost as touch boost
+	  in the Boeffla Config app
+
 endif

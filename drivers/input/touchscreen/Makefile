@@ -86,3 +86,4 @@ obj-$(CONFIG_TOUCHSCREEN_FT5X46)	+= ft5x46/
 obj-$(CONFIG_TOUCHSCREEN_BU21150)	+= bu21150.o
 obj-$(CONFIG_INPUT_MT_WRAPPER)		+= input_mt_wrapper.o
 obj-$(CONFIG_SWEEP2SLEEP)		+= sweep2sleep.o
+obj-$(CONFIG_TOUCHBOOST_CONTROL)	+= touchboost_switch.o
