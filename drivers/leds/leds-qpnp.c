@@ -269,31 +269,31 @@ int led_speed = 0;			// default is stock speed
 
 u32 convert_pause_hi_store (u32 value)
 {
-	pr_debug("Boeffla-LED: pause_hi orig = %d\n", value);
+	pr_debug("Sensei-LED: pause_hi orig = %d\n", value);
 
 	// calculate new pause time if speed is not set to stock
 	if (led_speed != LED_SPEED_STOCK_MODE)
 		value = LED_CUSTOM_PAUSE_HI / led_speed;
 
-	pr_debug("Boeffla-LED: pause_hi new = %d\n", value);
+	pr_debug("Sensei-LED: pause_hi new = %d\n", value);
 	return value;
 }
 
 u32 convert_pause_lo_store (u32 value)
 {
-	pr_debug("Boeffla-LED: pause_lo orig = %d\n", value);
+	pr_debug("Sensei-LED: pause_lo orig = %d\n", value);
 
 	// calculate new pause time if speed is not set to stock
 	if (led_speed != LED_SPEED_STOCK_MODE)
 		value = LED_CUSTOM_PAUSE_LO / led_speed;
 
-	pr_debug("Boeffla-LED: pause_lo new = %d\n", value);
+	pr_debug("Sensei-LED: pause_lo new = %d\n", value);
 	return value;
 }
 
 u32 convert_ramp_ms_store (u32 ramp_step_ms)
 {
-	pr_debug("Boeffla-LED: ramp_step_ms orig = %d\n", ramp_step_ms);
+	pr_debug("Sensei-LED: ramp_step_ms orig = %d\n", ramp_step_ms);
 
 	// no fading = disable ramp times
 	if (led_enable_fade == 0)
@@ -306,7 +306,7 @@ u32 convert_ramp_ms_store (u32 ramp_step_ms)
 	// calculate new ramp time
 	ramp_step_ms = LED_CUSTOM_RAMP_STEP / led_speed;
 
-	pr_debug("Boeffla-LED: ramp_step_ms new = %d\n", ramp_step_ms);
+	pr_debug("Sensei-LED: ramp_step_ms new = %d\n", ramp_step_ms);
 	return ramp_step_ms;
 }
 
@@ -320,7 +320,7 @@ int check_for_notification_led(struct led_classdev *led_cdev)
 
 int convert_brightness (int brightness)
 {
-	pr_debug("Boeffla-LED: brightness orig = %d\n", brightness);
+	pr_debug("Sensei-LED: brightness orig = %d\n", brightness);
 
 	// 0 value is stock
 	if (led_intensity == LED_INTENSITY_STOCK)
@@ -333,7 +333,7 @@ int convert_brightness (int brightness)
 	// calculate dimmed value	
 	brightness = (brightness * led_intensity) / LED_INTENSITY_MAX;
 
-	pr_debug("Boeffla-LED: brightness new = %d\n", brightness);
+	pr_debug("Sensei-LED: brightness new = %d\n", brightness);
 	return brightness;
 }
 
