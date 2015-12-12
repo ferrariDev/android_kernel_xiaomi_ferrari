@@ -1101,6 +1101,11 @@ static void qpnp_hap_td_enable(struct timed_output_dev *dev, int value)
 	schedule_work(&hap->work);
 }
 
+void set_vibrate(int value)
+{
+	qpnp_hap_td_enable(&ghap->timed_dev, value);
+}
+
 /* worker to opeate haptics */
 static void qpnp_hap_worker(struct work_struct *work)
 {
