@@ -19,13 +19,17 @@
 #include <linux/input.h>
 #include <linux/slab.h>
 #include <linux/cpu.h>
-#include <linux/powersuspend.h>
+#include <linux/lcd_notify.h>
 #include <linux/cpufreq.h>
 
 static int suspend_cpu_num = 2, resume_cpu_num = 7;
 static int endurance_level = 0;
 static int device_cpus = 8;
 static int core_limit = 8;
+
+static bool isSuspended = false;
+
+struct notifier_block lcd_worker;
 
 #define DEBUG 0
 
@@ -50,8 +54,6 @@ static int touch_boost_enabled = 0;
 
 static struct workqueue_struct *tplug_wq;
 static struct delayed_work tplug_work;
-<<<<<<< HEAD
-=======
 
 static struct workqueue_struct *tplug_boost_wq;
 static struct delayed_work tplug_boost;
@@ -59,7 +61,6 @@ static struct delayed_work tplug_boost;
 static struct workqueue_struct *tplug_resume_wq;
 static struct delayed_work tplug_resume_work;
 
->>>>>>> d825db7... thunderplug : introducing touch boost
 static unsigned int last_load[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 struct cpu_load_data {
@@ -263,16 +264,17 @@ static ssize_t thunderplug_hp_enabled_show(struct kobject *kobj, struct kobj_att
 
 static ssize_t __ref thunderplug_hp_enabled_store(struct kobject *kobj, struct kobj_attribute *attr, const char *buf, size_t count)
 {
-	int val;
+	int val,last_val = tplug_hp_enabled;
 	sscanf(buf, "%d", &val);
-	int last_val = tplug_hp_enabled;
 	switch(val)
 	{
 		case 0:
 		case 1:
 			tplug_hp_enabled = val;
+		break;
 		default:
 			pr_info("%s : invalid choice\n", THUNDERPLUG);
+		break;
 	}
 
 	if(tplug_hp_enabled == 1 && tplug_hp_enabled != last_val)
@@ -348,6 +350,25 @@ static unsigned int get_curr_load(unsigned int cpu)
 	return cur_load;
 }
 
+static void thunderplug_suspend(void)
+{
+	offline_cpus();
+
+	pr_info("%s: suspend\n", THUNDERPLUG);
+}
+
+static void __ref thunderplug_resume(void)
+{
+	cpus_online_all();
+
+	pr_info("%s: resume\n", THUNDERPLUG);
+}
+
+static void __cpuinit tplug_resume_work_fn(struct work_struct *work)
+{
+	thunderplug_resume();
+}
+
 static void __cpuinit tplug_work_fn(struct work_struct *work)
 {
 	int i;
@@ -357,12 +378,16 @@ static void __cpuinit tplug_work_fn(struct work_struct *work)
 	{
 	case 0:
 		core_limit = 8;
+	break;
 	case 1:
 		core_limit = 4;
+	break;
 	case 2:
 		core_limit = 2;
+	break;
 	default:
 		core_limit = 8;
+	break;
 	}
 
 	for(i = 0 ; i < core_limit; i++)
@@ -381,26 +406,14 @@ static void __cpuinit tplug_work_fn(struct work_struct *work)
 	if(cpu_online(i) && avg_load[i] > load_threshold && cpu_is_offline(i+1))
 	{
 	if(DEBUG)
-<<<<<<< HEAD
-		pr_info("%s : bringing back cpu%d\n",i, THUNDERPLUG);
-		if(!((i+1) > 7))
-=======
 		pr_info("%s : bringing back cpu%d\n", THUNDERPLUG,i);
 		if(!((i+1) > 7)) {
 			last_time[i+1] = ktime_to_ms(ktime_get());
->>>>>>> 088a646... thunderplug : improve hotplugging algorithm
 			cpu_up(i+1);
 		}
 	}
 	else if(cpu_online(i) && avg_load[i] < load_threshold && cpu_online(i+1))
 	{
-<<<<<<< HEAD
-	if(DEBUG)
-		pr_info("%s : offlining cpu%d\n",i, THUNDERPLUG);
-		if(!(i+1)==0)
-			cpu_down(i+1);
-	}
-=======
 		if(DEBUG)
 			pr_info("%s : offlining cpu%d\n", THUNDERPLUG,i);
 			if(!(i+1)==0) {
@@ -409,29 +422,47 @@ static void __cpuinit tplug_work_fn(struct work_struct *work)
 					cpu_down(i+1);
 			}
 		}
->>>>>>> 088a646... thunderplug : improve hotplugging algorithm
 	}
 
-	if(tplug_hp_enabled != 0)
+	if(tplug_hp_enabled != 0 && !isSuspended)
 		queue_delayed_work_on(0, tplug_wq, &tplug_work,
 			msecs_to_jiffies(sampling_time));
-	else
-		cpus_online_all();
+	else {
+		if(!isSuspended)
+			cpus_online_all();
+		else
+			thunderplug_suspend();
+	}
 
 }
 
-static void thunderplug_suspend(struct power_suspend *h)
+static int lcd_notifier_callback(struct notifier_block *nb,
+                                 unsigned long event, void *data)
 {
-	offline_cpus();
+       switch (event) {
+       case LCD_EVENT_ON_START:
+			isSuspended = false;
+			if(tplug_hp_enabled)
+				queue_delayed_work_on(0, tplug_wq, &tplug_work,
+								msecs_to_jiffies(sampling_time));
+			else
+				queue_delayed_work_on(0, tplug_resume_wq, &tplug_resume_work,
+		                      msecs_to_jiffies(10));
+			pr_info("thunderplug : resume called\n");
+               break;
+       case LCD_EVENT_ON_END:
+               break;
+       case LCD_EVENT_OFF_START:
+               break;
+       case LCD_EVENT_OFF_END:
+			isSuspended = true;
+			pr_info("thunderplug : suspend called\n");
+               break;
+       default:
+               break;
+       }
 
-	pr_info("%s: suspend\n", THUNDERPLUG);
-}
-
-static void __ref thunderplug_resume(struct power_suspend *h)
-{
-	cpus_online_all();
-
-	pr_info("%s: resume\n", THUNDERPLUG);
+       return 0;
 }
 
 static ssize_t thunderplug_ver_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
@@ -491,12 +522,6 @@ static struct attribute_group thunderplug_attr_group =
         .attrs = thunderplug_attrs,
     };
 
-static struct power_suspend thunderplug_power_suspend_handler = 
-	{
-		.suspend = thunderplug_suspend,
-		.resume = thunderplug_resume,
-	};
-
 static struct kobject *thunderplug_kobj;
 
 static int __init thunderplug_init(void)
@@ -520,13 +545,6 @@ static int __init thunderplug_init(void)
                 kobject_put(thunderplug_kobj);
         }
 
-<<<<<<< HEAD
-        register_power_suspend(&thunderplug_power_suspend_handler);
-		tplug_wq = alloc_workqueue("tplug",
-				WQ_HIGHPRI | WQ_UNBOUND, 1);
-
-		INIT_DELAYED_WORK(&tplug_work, tplug_work_fn);
-=======
 		lcd_worker.notifier_call = lcd_notifier_callback;
 
         lcd_register_client(&lcd_worker);
@@ -550,7 +568,6 @@ static int __init thunderplug_init(void)
 		INIT_DELAYED_WORK(&tplug_work, tplug_work_fn);
 		INIT_DELAYED_WORK(&tplug_resume_work, tplug_resume_work_fn);
 		INIT_DELAYED_WORK(&tplug_boost, tplug_boost_work_fn);
->>>>>>> d825db7... thunderplug : introducing touch boost
 		queue_delayed_work_on(0, tplug_wq, &tplug_work,
 		                      msecs_to_jiffies(10));
 
@@ -563,3 +580,4 @@ MODULE_LICENSE("GPL and additional rights");
 MODULE_AUTHOR("Varun Chitre <varun.chitre15@gmail.com>");
 MODULE_DESCRIPTION("Hotplug driver for OctaCore CPU");
 late_initcall(thunderplug_init);
+
