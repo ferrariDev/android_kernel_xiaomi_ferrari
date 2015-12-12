@@ -23,6 +23,7 @@ nocol='\033[0m'
 device='Xiaomi Mi4i (FERRARI)' # Device Id
 sensei_base_version='Sensei' # Kernel Id
 version='2.0.4-dev' # Kernel Version
+TC=''
 
 # Modify the following variable if you want to build
 #export CROSS_COMPILE="~/Development/Toolchains/ubertc6.0/bin/aarch64-"
@@ -99,7 +100,7 @@ one(){
 	cp $KERNEL_DIR/arch/arm64/boot/Image  $MODULES_DIR/Mi4i/tools
 	cp $KERNEL_DIR/arch/arm64/boot/dt.img  $MODULES_DIR/Mi4i/tools
 	cd $MODULES_DIR/Mi4i/
-	zipfile="Sensei-$version-$(date +"%Y-%m-%d(%I.%M%p)").zip"
+	zipfile="Sensei-$version+$TC-$(date +"%Y-%m-%d(%I.%M%p)").zip"
 	echo $zipfile
 	zip -r $zipfile tools META-INF system -x *kernel/.gitignore*
 	BUILD_END=$(date +"%s")
