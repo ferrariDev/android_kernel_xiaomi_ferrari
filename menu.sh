@@ -22,7 +22,7 @@ nocol='\033[0m'
 # Device varibles (Modify this)
 device='Xiaomi Mi4i (FERRARI)' # Device Id
 sensei_base_version='Sensei' # Kernel Id
-version='2.0.4-dev' # Kernel Version
+version='2.0.5-dev' # Kernel Version
 TC=''
 
 # Modify the following variable if you want to build
@@ -32,7 +32,7 @@ export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="Haikal Izzuddin"
 export KBUILD_BUILD_HOST="haikalizz"
-STRIP="~/Development/Toolchains/ubertc6.0/bin/aarch64-strip"
+STRIP="~/Development/Toolchains/ubertc6.0/bin/aarch64-linux-android-strip"
 MODULES_DIR=$KERNEL_DIR/../SenseiOutput
  
 # ----------------------------------
