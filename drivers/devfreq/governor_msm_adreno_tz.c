@@ -20,6 +20,7 @@
 #include <linux/ftrace.h>
 #include <linux/mm.h>
 #include <linux/msm_adreno_devfreq.h>
+#include <linux/powersuspend.h>
 #include <asm/cacheflush.h>
 #include <soc/qcom/scm.h>
 #include "governor.h"
@@ -68,6 +69,9 @@ static void do_partner_start_event(struct work_struct *work);
 static void do_partner_stop_event(struct work_struct *work);
 static void do_partner_suspend_event(struct work_struct *work);
 static void do_partner_resume_event(struct work_struct *work);
+
+/* Boolean to detect if PM has entered suspend mode */
+static bool suspended = false;
 
 /* Trap into the TrustZone, and call funcs there. */
 static int __secure_tz_reset_entry2(unsigned int *scm_data, u32 size_scm_data,
@@ -195,6 +199,16 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 	}
 
 	*freq = stats.current_frequency;
+
+	/*
+	 * Force to use & record as min freq when system has
+	 * entered pm-suspend or screen-off state.
+	 */
+	if (suspended || powersuspended) {
+		*freq = devfreq->profile->freq_table[devfreq->profile->max_state - 1];
+		return 0;
+	}
+
 	priv->bin.total_time += stats.total_time;
 	priv->bin.busy_time += stats.busy_time;
 
@@ -210,13 +224,13 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 		return 0;
 	}
 
-	if ((stats.busy_time  100 / stats.total_time) > BUSY_BIN) {
+	if ((stats.busy_time *100 / stats.total_time) > BUSY_BIN) {
 		busy_bin += stats.busy_time;
 		if (stats.total_time > LONG_FRAME)
 			frame_flag = 1;
 	} else {
 		busy_bin = 0;
-		frame_flage = 0;
+		frame_flag = 0;
 	}
 
 	level = devfreq_get_freq_level(devfreq, stats.current_frequency);
@@ -364,6 +378,7 @@ static int tz_resume(struct devfreq *devfreq)
 {
 	struct devfreq_dev_profile *profile = devfreq->profile;
 	unsigned long freq;
+	suspended = false;
 
 	freq = profile->initial_freq;
 
@@ -373,12 +388,18 @@ static int tz_resume(struct devfreq *devfreq)
 static int tz_suspend(struct devfreq *devfreq)
 {
 	struct devfreq_msm_adreno_tz_data *priv = devfreq->data;
+	struct devfreq_dev_profile *profile = devfreq->profile;
+	unsigned long freq;
 	unsigned int scm_data[2] = {0, 0};
 	__secure_tz_reset_entry2(scm_data, sizeof(scm_data), priv->is_64);
+	
+	suspended = true;
 
 	priv->bin.total_time = 0;
 	priv->bin.busy_time = 0;
-	return 0;
+	
+	freq = profile->freq_table[profile->max_state - 1];
+	return profile->target(devfreq->dev.parent, &freq, 0);
 }
 
 static int tz_handler(struct devfreq *devfreq, unsigned int event, void *data)
