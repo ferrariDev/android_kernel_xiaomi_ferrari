@@ -63,6 +63,15 @@ config DEVFREQ_GOV_USERSPACE
 	  Otherwise, the governor does not change the frequnecy
 	  given at the initialization.
 
+config ADRENO_IDLER
+	tristate "MSM Adreno Idler"
+	depends on DEVFREQ_GOV_MSM_ADRENO_TZ
+	help
+		Uses a different calculation method on top of Adreno TZ
+		just for calculating freq for idle to reduce the
+		wasted power coming from stock while maintaining
+		high-performance.
+
 config DEVFREQ_GOV_CPUFREQ
 	tristate "CPUfreq"
 	depends on CPU_FREQ
