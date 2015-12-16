@@ -53,7 +53,7 @@ module_param_named(adreno_idler_idlewait, idlewait, int, 0664);
 
 /* Taken from ondemand */
 static int downdifferenctial = 20;
-module_param_named(adreno_idler_downdifferenctial, downdifferenctial, int, 0664);
+module_param_named(adreno_idler_downdifferenctial, downdifferential, int, 0664);
 
 /* Master switch to activate whole routine */
 static int adreno_idler_active = 1;
@@ -76,7 +76,7 @@ int adreno_idler(struct devfreq_dev_status stats, struct devfreq *devfreq,
 			return 1;
 		}
 		if (idlecount >= idlewait &&
-		    stats.busy_time * 100 < stats.total_time * downdifferenctial) {
+		    stats.busy_time * 100 < stats.total_time * downdifferential) {
 			/* We are idle for idlewaitms! Ramp down the frequency now. */
 			*freq = devfreq->profile->freq_table[devfreq->profile->max_state - 1];
 			idlecount--;
