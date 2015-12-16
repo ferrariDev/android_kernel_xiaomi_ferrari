@@ -74,6 +74,15 @@ static void do_partner_resume_event(struct work_struct *work);
 static bool suspended = false;
 
 /* Trap into the TrustZone, and call funcs there. */
+static int __secure_tz_entry2(u32 cmd, u32 val1, u32 val2){
+	int ret;
+	spin_lock(&tz_lock);
+	__iowmb();
+	ret = scm_call_atomic2(SCM_SVC_IO, cmd, val1, val2);
+	spin_unlock(&tz_lock);
+	return ret;
+}
+
 static int __secure_tz_reset_entry2(unsigned int *scm_data, u32 size_scm_data,
 					bool is_64)
 {
@@ -406,18 +415,14 @@ static int tz_resume(struct devfreq *devfreq)
 static int tz_suspend(struct devfreq *devfreq)
 {
 	struct devfreq_msm_adreno_tz_data *priv = devfreq->data;
-	struct devfreq_dev_profile *profile = devfreq->profile;
-	unsigned long freq;
 	unsigned int scm_data[2] = {0, 0};
 	__secure_tz_reset_entry2(scm_data, sizeof(scm_data), priv->is_64);
-	
-	suspended = true;
+	__secure_tz_entry2(TZ_RESET_ID, 0, 0);
 
 	priv->bin.total_time = 0;
 	priv->bin.busy_time = 0;
 	
-	freq = profile->freq_table[profile->max_state - 1];
-	return profile->target(devfreq->dev.parent, &freq, 0);
+	return 0;
 }
 
 static int tz_handler(struct devfreq *devfreq, unsigned int event, void *data)
