@@ -13,10 +13,12 @@ KERNEL_DIR=$PWD
 KERN_IMG=$KERNEL_DIR/arch/arm64/boot/Image
 DTBTOOL=$KERNEL_DIR/tools/dtbToolCM
 BUILD_START=$(date +"%s")
-blue='\033[0;34m'
-cyan='\033[0;36m'
-yellow='\033[0;33m'
-red='\033[0;31m'
+green='\033[01;32m'
+red='\033[01;31m'
+cyan='\033[01;36m'
+blue='\033[01;34m'
+blink_red='\033[05;31m'
+restore='\033[0m'
 nocol='\033[0m'
 
 # Device varibles (Modify this)
@@ -26,7 +28,6 @@ version='2.0.6-dev' # Kernel Version
 TC=''
 
 # Modify the following variable if you want to build
-#export CROSS_COMPILE="~/Development/Toolchains/ubertc6.0/bin/aarch64-"
 export USE_CCACHE=1
 export ARCH=arm64
 export SUBARCH=arm64
@@ -44,45 +45,48 @@ pause(){
  
 # Build
 one(){
-	echo " Initialising Build Sequence...  "
-
-	echo -e "${green}"
+	echo "${green}"
 	echo "-----------------"
-	echo "Making Sensei Kernel:"
+	echo "Initialising Build Sequence"
 	echo "-----------------"
-	echo -e "${restore}"
+	echo "${restore}"
 
-	while read -p "Do you want to use UBERTC 4.9(1) or SABERMOD4.9(2)? " echoice
+	echo "${cyan}"
+	while read -p " Desired toolchain: UBERTC 4.9(1) | SABERMOD4.9(2) | UBERTC6.0(3)?" echoice
 	do
 	case "$echoice" in
 	1 )
 		export CROSS_COMPILE="/home/haikalizz/Development/Toolchains/ubertc4.9/bin/aarch64-linux-android-"
 		TC="UBER"
-		echo
-		echo "Using UBERTC4.9"
+		echo "${blue}"
+		echo "Compiling using UBERTC4.9"
+		echo "${restore}"
 		break
 		;;
 	2 )
 		export CROSS_COMPILE="/home/haikalizz/Development/Toolchains/sabermod4.9/bin/aarch64-"
 		TC="SM"
-		echo
-		echo "Using SM4.9"
+		echo "${blue}"
+		echo "Compiling using SM4.9"
+		echo "${restore}"
 		break
 		;;
 	3 )
 		export CROSS_COMPILE="/home/haikalizz/Development/Toolchains/ubertc6.0/bin/aarch64-linux-android-"
 		TC="UBER6"
-		echo
-		echo "Using UBER6"
+		echo "${blue}"
+		echo "Compiling using UBER6"
+		echo "${restore}"
 		break
 		;;
 	* )
-		echo
+		echo "${blink_red}"
 		echo "Invalid try again!"
-		echo
+		echo "${restore}"
 		;;
 	esac
 	done
+	echo "${restore}"
 
 	make ferrari_debug_defconfig
 	read -p "Enter number of cpu's : " choice
@@ -105,6 +109,12 @@ one(){
 	zip -r $zipfile tools META-INF system -x *kernel/.gitignore*
 	BUILD_END=$(date +"%s")
 	DIFF=$(($BUILD_END - $BUILD_START))
+
+ 	echo -e "${green}"
+ 	echo "------------------------------------------"
+ 	echo "Build $version Completed :"
+ 	echo "------------------------------------------"
+ 	echo -e "${restore}"
 	echo -e "$yellow Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$nocol"
 	echo "Enjoy Sensei for "$device
 
@@ -139,8 +149,9 @@ four(){
 
 show_menus() {
 	clear
+	echo "${restore}"
 	echo "~~~~~~~~~~~~~~~~~~~~~"	
-	echo " Sensei Build Script"
+	echo " Welcome! Sensei Builder"
 	echo "~~~~~~~~~~~~~~~~~~~~~"
 	echo "1. Build Sensei"
 	echo "		? - Build kernel from source"
@@ -148,7 +159,8 @@ show_menus() {
 	echo "		? - Clear the previous build"
 	echo "3. Kernel Info"
 	echo "		? - Returns kernel info"
-	echo "4. Defconfig"
+	echo "4. Edit Defconfig"
+	echo "		? - Edits the defconfig"
 	echo "5. Exit"
 }
 
