@@ -136,21 +136,29 @@ three(){
 	echo "Device : "$device
 	echo "Version : "$sensei_base_version-$version
 	echo "";
-	echo "Modules Dir : "$MODULES_DIR
+	echo "Build Dir : "$KERNEL_DIR
+	echo "Out Dir : "$MODULES_DIR
 	pause
 }
  
 # Kconfig
-four(){
+menuconfig(){
+	echo "Opening Menuconfig"
 	make ferrari_debug_defconfig;
 	make menuconfig;
 	pause
 }
 
+# Changelog Generator
+changelog_gen(){
+	echo "Generating Changelog"
+	sh changelog.sh
+	pause
+}
+
 show_menus() {
 	clear
-	echo "${restore}"
-	echo "~~~~~~~~~~~~~~~~~~~~~"	
+	echo "${restore}~~~~~~~~~~~~~~~~~~~~~"	
 	echo " Welcome! Sensei Builder"
 	echo "~~~~~~~~~~~~~~~~~~~~~"
 	echo "1. Build Sensei"
@@ -159,20 +167,23 @@ show_menus() {
 	echo "		? - Clear the previous build"
 	echo "3. Kernel Info"
 	echo "		? - Returns kernel info"
-	echo "4. Edit Defconfig"
+	echo "4. Generate Changelog"
+	echo "		? - Generates changelog"
+	echo "5. Edit Defconfig"
 	echo "		? - Edits the defconfig"
-	echo "5. Exit"
+	echo "6. Exit"
 }
 
 read_options(){
 	local choice
-	read -p "Enter choice [ 1 - 5] " choice
+	read -p "Enter choice [ 1 - 6] " choice
 	case $choice in
 		1) one ;;
 		2) two ;;
 		3) three;;
-		4)four;;
-		5) exit 0;;
+		4) changelog_gen;;
+		5) menuconfig;;
+		6) exit 0;;
 		*) echo -e "${RED}Error...${STD}" && sleep 2
 	esac
 }

@@ -1,4 +1,11 @@
 #!/bin/sh
+# Bash Color
+green='\033[01;32m'
+red='\033[01;31m'
+cyan='\033[01;36m'
+blue='\033[01;34m'
+blink_red='\033[05;31m'
+restore='\033[0m'
 
 sdate=${1}
 cdate=`date +"%m_%d_%Y"`
@@ -11,7 +18,7 @@ clear
 # Check the date start range is set
 if [ -z "$sdate" ]; then
 echo""
-echo "ATTENTION: Start date not defined ----------------------------------------------------"
+echo "ATTENTION: Start date not defined ------------------------------------------------"
     echo""
     echo " >>> Please define a start date in mm/dd/yyyy format ..."
     echo""
@@ -21,14 +28,14 @@ fi
 
 # Find the directories to log
 echo"";echo"";echo""
-echo "Sensei CHANGELOG -------------------------------------------------------------------------"
+echo "Sensei's CHANGELOG -------------------------------------------------------------"
 echo""
 find $rdir -name .git | sed 's/\/.git//g' | sed 'N;$!P;$!D;$d' | while read line
 do
 cd $line
     # Test to see if the repo needs to have a changelog written.
     log=$(git log --pretty="%an - %s" --no-merges --since=$sdate --date-order)
-    project="SenseiFerrari"
+    project="Sensei Kernel"
     if [ -z "$log" ]; then
     echo " >>> Nothing updated on $project changelog, skipping ..."
     else
@@ -44,4 +51,5 @@ echo "" >> "$rdir"/Changelog_$cdate.log
 done
 echo""
 echo "------------------------------------------------------------------------------------"
-echo"";echo"";echo""
+echo"";echo"";echo"" 
+
