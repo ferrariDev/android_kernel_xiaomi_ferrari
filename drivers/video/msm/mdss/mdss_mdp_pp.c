@@ -2046,7 +2046,6 @@ int mdss_mdp_pp_resume(struct mdss_mdp_ctl *ctl, u32 dspp_num)
 	return 0;
 }
 
-<<<<<<< HEAD
 void mdss_mdp_pp_kcal_update(struct kcal_lut_data *lut_data)
 {
 	u32 copyback = 0;
@@ -2136,8 +2135,6 @@ void mdss_mdp_pp_kcal_invert(struct kcal_lut_data *lut_data)
 	mdss_mdp_igc_lut_config(igc_config, &copyback, copy_from_kernel);
 }
 
-=======
->>>>>>> parent of 84ad778... msm:mdss: Initial KCAL support
 int mdss_mdp_pp_init(struct device *dev)
 {
 	int i, ret = 0;
