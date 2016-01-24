@@ -110,12 +110,12 @@ one(){
 	BUILD_END=$(date +"%s")
 	DIFF=$(($BUILD_END - $BUILD_START))
 
- 	echo -e "${green}"
+ 	echo "${green}"
  	echo "------------------------------------------"
  	echo "Build $version Completed :"
  	echo "------------------------------------------"
- 	echo -e "${restore}"
-	echo -e "$yellow Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds.$nocol"
+ 	echo "${restore}"
+	echo ${yellow}"Build completed in $(($DIFF / 60)) minute(s) and $(($DIFF % 60)) seconds."${restore}
 	echo "Enjoy Sensei for "$device
 
         exit 0
