@@ -899,7 +899,7 @@ static int hub_usb3_port_disable(struct usb_hub *hub, int port1)
 	 * Disabled. Since it's already in USB_SS_PORT_LS_RX_DETECT state, we
 	 * check the state here to avoid the bug.
 	 */
-	if ((portstatus & USB_PORT_STAT_LINK_STATE) =3D=3D
+	if ((portstatus & USB_PORT_STAT_LINK_STATE) ==
 				USB_SS_PORT_LS_RX_DETECT) {
 		dev_dbg(&hub->ports[port1 - 1]->dev,
 			 "Not disabling port; link state is RxDetect\n");
