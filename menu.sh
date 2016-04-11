@@ -33,7 +33,7 @@ export ARCH=arm64
 export SUBARCH=arm64
 export KBUILD_BUILD_USER="Haikal Izzuddin"
 export KBUILD_BUILD_HOST="haikalizz"
-STRIP="/media/haikalizz/devLinux/Toolchains/ubertc6.0/bin/aarch64-linux-android-strip"
+STRIP="~/Development/SenseiKernel/toolchains/uber/bin/aarch64-linux-android-strip"
 MODULES_DIR=$KERNEL_DIR/../SenseiOutput
  
 # ----------------------------------
@@ -56,7 +56,7 @@ one(){
 	do
 	case "$echoice" in
 	1 )
-		export CROSS_COMPILE="/media/haikalizz/devLinux/Toolchains/ubertc4.9/bin/aarch64-linux-android-"
+		export CROSS_COMPILE="~/Development/SenseiKernel/toolchains/uber/bin/aarch64-linux-android-"
 		TC="UBER"
 		echo "${blue}"
 		echo "Compiling using UBERTC4.9"
@@ -64,7 +64,7 @@ one(){
 		break
 		;;
 	2 )
-		export CROSS_COMPILE="/media/haikalizz/devLinux/Toolchains/sabermod4.9/bin/aarch64-"
+		export CROSS_COMPILE="~/Development/SenseiKernel/toolchains/sabermod/bin/aarch64-"
 		TC="SM"
 		echo "${blue}"
 		echo "Compiling using SM4.9"
@@ -72,7 +72,7 @@ one(){
 		break
 		;;
 	3 )
-		export CROSS_COMPILE="/media/haikalizz/devLinux/Toolchains/ubertc6.0/bin/aarch64-linux-android-"
+		export CROSS_COMPILE="~/Development/SenseiKernel/toolchains/uber6/bin/aarch64-linux-android-"
 		TC="UBER6"
 		echo "${blue}"
 		echo "Compiling using UBER6"
