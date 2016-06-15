@@ -56,7 +56,7 @@ one(){
 	do
 	case "$echoice" in
 	1 )
-		export CROSS_COMPILE="~/Development/SenseiKernel/toolchains/uber/bin/aarch64-linux-android-"
+		export CROSS_COMPILE="/home/haikalizz/Development/SenseiKernel/toolchains/uber/bin/aarch64-linux-android-"
 		TC="UBER"
 		echo "${blue}"
 		echo "Compiling using UBERTC4.9"
