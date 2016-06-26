@@ -199,9 +199,11 @@ struct ex_dbs_tuners {
 	unsigned int sampling_rate;
 	unsigned int up_threshold;
 	unsigned int down_differential;
+	unsigned int gboost;
+	unsigned int gboost_min_freq;
 	unsigned int active_floor_freq;
+	unsigned int max_screen_off_freq;
 	unsigned int sampling_down_factor;
-	unsigned int powersave;
 };
 
 /* Common Governor data across policies */
