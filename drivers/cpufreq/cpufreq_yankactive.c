@@ -33,6 +33,7 @@
 #include <asm/cputime.h>
 
 #define DEFAULT_HISPEED_FREQ	1651000
+#define MAX_RT_PRIO		100
 
 static int active_count;
 
