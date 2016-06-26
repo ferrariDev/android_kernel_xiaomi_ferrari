@@ -34,7 +34,8 @@ export SUBARCH=arm64
 export KBUILD_BUILD_USER="Haikal Izzuddin"
 export KBUILD_BUILD_HOST="haikalizz"
 STRIP="~/Development/SenseiKernel/toolchains/uber/bin/aarch64-linux-android-strip"
-MODULES_DIR=$KERNEL_DIR/../SenseiOutput
+BUILD_DIR=$KERNEL_DIR/../SenseiOutput
+MODULES_DIR="${KERNEL_DIR}/../SenseiOutput/Mi4i/modules"
  
 # ----------------------------------
 # Step #2: User defined function
@@ -97,16 +98,20 @@ one(){
 			echo -e "$red Kernel Compilation failed! Fix the errors! $nocol"
 			exit 1
 	fi
-	$DTBTOOL -2 -o $KERNEL_DIR/arch/arm64/boot/dt.img -s 2048 -p $KERNEL_DIR/scripts/dtc/ $KERNEL_DIR/arch/arm/boot/dts/
+	$DTBTOOL -2 -o $KERNEL_DIR/arch/arm64/boot/dtb -s 2048 -p $KERNEL_DIR/scripts/dtc/ $KERNEL_DIR/arch/arm/boot/dts/
 
-	rm $MODULES_DIR/Mi4i/tools/Image
-	rm $MODULES_DIR/Mi4i/tools/dt.img
-	cp $KERNEL_DIR/arch/arm64/boot/Image  $MODULES_DIR/Mi4i/tools
-	cp $KERNEL_DIR/arch/arm64/boot/dt.img  $MODULES_DIR/Mi4i/tools
-	cd $MODULES_DIR/Mi4i/
-	zipfile="Sensei-$version+$TC-$(date +"%Y-%m-%d(%I.%M%p)").zip"
+	rm `echo $MODULES_DIR"/*"`
+	find $KERNEL_DIR -name '*.ko' -exec cp -v {} $MODULES_DIR \;
+
+	rm $BUILD_DIR/Mi4i/zImage
+	rm $BUILD_DIR/Mi4i/dtb
+	cp -vr $KERNEL_DIR/arch/arm64/boot/Image  $BUILD_DIR/Mi4i/zImage
+	cp $KERNEL_DIR/arch/arm64/boot/dtb  $BUILD_DIR/Mi4i/dtb
+	cd $BUILD_DIR/Mi4i/
+	zipfile="SenseiMi4i-$version+$TC-$(date +"%Y-%m-%d(%I.%M%p)").zip"
 	echo $zipfile
-	zip -r $zipfile tools META-INF system -x *kernel/.gitignore*
+	zip -r9 $zipfile * -x README
+	mv $BUILD_DIR/Mi4i/$zipfile $BUILD_DIR/
 	BUILD_END=$(date +"%s")
 	DIFF=$(($BUILD_END - $BUILD_START))
 
