@@ -557,6 +557,13 @@ config STATE_NOTIFIER
         bool "State Notifier"
 	default n
 
+config MSM_LIMITER
+ 	bool "MSM Frequency Limiter Driver"
+ 	default y
+ 	help
+ 	  The MSM Frequency Limiter Driver controls max frequency limit for each CPU
+ 	  to desired value on suspend/resume
+
 config ALUCARD_HOTPLUG
 	bool "Enable alucard-hotplug cpu hotplug driver"
 	default n
