@@ -175,4 +175,3 @@ MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Jean-Pierre Rasquin <yank555.lu@gmail.com>");
 MODULE_AUTHOR("Paul Reioux <reioux@gmail.com>");
 MODULE_DESCRIPTION("Fast Charge Hack for Android");
-
