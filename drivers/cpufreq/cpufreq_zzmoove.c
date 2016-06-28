@@ -3065,9 +3065,10 @@ static ssize_t store_sampling_rate_idle_delay(struct kobject *a, struct attribut
 #endif /* ENABLE_PROFILES_SUPPORT */
 	    return -EINVAL;
 
-	if (input == 0)
+	if (input == 0){
 	    sampling_rate_step_up_delay = 0;
 	    sampling_rate_step_down_delay = 0;
+	}
 
 #ifdef ENABLE_PROFILES_SUPPORT
 	// ZZ: set profile number to 0 and profile name to custom mode if value has changed

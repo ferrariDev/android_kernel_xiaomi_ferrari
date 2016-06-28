@@ -152,11 +152,11 @@ static void __ref tplug_boost_work_fn(struct work_struct *work)
 	struct cpufreq_policy policy;
 	int cpu, ret;
 	for(cpu = 1; cpu < NR_CPUS; cpu++) {
-#ifdef CONFIG_SCHED_HMP
-    if(tplug_hp_style == 1)
-#else
-	if(tplug_hp_enabled == 1)
-#endif
+	#ifdef CONFIG_SCHED_HMP
+		if(tplug_hp_style == 1)
+	#else
+		if(tplug_hp_enabled == 1)
+	#endif
 		if(cpu_is_offline(cpu))
 			cpu_up(cpu);
 		ret = cpufreq_get_policy(&policy, cpu);
