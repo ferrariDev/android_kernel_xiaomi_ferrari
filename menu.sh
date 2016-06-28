@@ -53,7 +53,7 @@ one(){
 	echo "${restore}"
 
 	echo "${cyan}"
-	while read -p " Desired toolchain: UBERTC 4.9(1) | SABERMOD4.9(2) | UBERTC7.0(3)?" echoice
+	while read -p " Desired toolchain: UBERTC 4.9(1) | SABERMOD4.9(2) | UBERTC6.0(3)?" echoice
 	do
 	case "$echoice" in
 	1 )
@@ -73,10 +73,10 @@ one(){
 		break
 		;;
 	3 )
-		export CROSS_COMPILE="~/Development/SenseiKernel/toolchains/uber7/bin/aarch64-linux-android-"
-		TC="UBER7"
+		export CROSS_COMPILE="~/Development/SenseiKernel/toolchains/uber6/bin/aarch64-linux-android-"
+		TC="UBER6"
 		echo "${blue}"
-		echo "Compiling using UBER7"
+		echo "Compiling using UBER6"
 		echo "${restore}"
 		break
 		;;
